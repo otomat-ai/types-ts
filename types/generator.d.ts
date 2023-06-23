@@ -1,4 +1,4 @@
-import { ModuleNames, ModuleOptionValue } from './module';
+import { ModuleName, ModuleOptionValue } from './module';
 import { ChatCompletionRequestMessage } from 'openai';
 export declare const GENERATOR_MODELS: readonly ["gpt-3.5-turbo", "gpt-4", "gpt-3.5-turbo-16k", "gpt-4-32k"];
 export type GeneratorModel = typeof GENERATOR_MODELS[number];
@@ -20,7 +20,7 @@ export type GeneratorExample = {
     input: string;
     output: string;
 };
-export type GeneratorModule<T extends ModuleNames> = {
+export type GeneratorModule<T extends ModuleName> = {
     name: T;
     options?: ModuleOptionValue<T>;
     inputReference?: any;

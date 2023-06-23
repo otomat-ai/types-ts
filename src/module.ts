@@ -4,7 +4,18 @@ import {
 } from 'openai';
 import { GeneratorModel, GeneratorModule } from './generator';
 
-export type ModuleNames = keyof typeof MODULES;
+export const MODULES = ['analysis', 'compliance'] as const;
+
+export type ModuleName = typeof MODULES[number];
+
+export type BaseModule<T extends Record<string, ModuleOptionDefinition<any>>> =
+  {
+    options: T;
+  };
+
+export type BaseModules = {
+  [Key in ModuleName]: BaseModule<any>;
+};
 
 export type ModuleOptionDefinition<T extends string | number | boolean> = {
   default: T;
@@ -12,22 +23,15 @@ export type ModuleOptionDefinition<T extends string | number | boolean> = {
   description: string;
 };
 
-export type ModuleOptionValue<T extends ModuleNames> = {
-  [K in keyof typeof MODULES[T]['options']]?: typeof MODULES[T]['options'][K] extends ModuleOptionDefinition<
+export type ModuleOptionValue<T extends ModuleName> = {
+  [K in keyof typeof baseModules[T]['options']]?: typeof baseModules[T]['options'][K] extends ModuleOptionDefinition<
     infer R
   >
     ? R
     : never;
 };
 
-export type Module<T extends Record<string, ModuleOptionDefinition<any>>> = {
-  options: T;
-};
-
-export const MODULES: Record<
-  string,
-  Module<Record<string, ModuleOptionDefinition<any>>>
-> = {
+export const baseModules: BaseModules = {
   analysis: {
     options: {},
   },
@@ -40,10 +44,7 @@ export const MODULES: Record<
       },
     },
   },
-} as const satisfies Record<
-  string,
-  Module<Record<string, ModuleOptionDefinition<any>>>
->;
+} as const satisfies BaseModules;
 
 export type BaseProcessInfo = {
   module: string;
@@ -98,7 +99,7 @@ export type Completion = SuccesfulCompletion | ErrorCompletion;
 
 type BaseOperatorData = {
   generator: Generator;
-  modules: GeneratorModule<ModuleNames>[];
+  modules: GeneratorModule<ModuleName>[];
   meta: Meta;
 };
 
