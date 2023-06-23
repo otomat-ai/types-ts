@@ -8,13 +8,21 @@ export const MODULES = ['analysis', 'compliance'] as const;
 
 export type ModuleName = typeof MODULES[number];
 
-export type BaseModule<T extends Record<string, ModuleOptionDefinition<any>>> =
-  {
+export type ModuleInformation = {
+  type: 'pre' | 'post';
+  name: string;
+  key: string;
+  description: string;
+  information?: string;
+};
+
+export type Module<T extends Record<string, ModuleOptionDefinition<any>>> =
+  ModuleInformation & {
     options: T;
   };
 
-export type BaseModules = {
-  [Key in ModuleName]: BaseModule<any>;
+export type Modules = {
+  [Key in ModuleName]: Module<any>;
 };
 
 export type ModuleOptionDefinition<T extends string | number | boolean> = {
@@ -24,18 +32,30 @@ export type ModuleOptionDefinition<T extends string | number | boolean> = {
 };
 
 export type ModuleOptionValue<T extends ModuleName> = {
-  [K in keyof typeof baseModules[T]['options']]?: typeof baseModules[T]['options'][K] extends ModuleOptionDefinition<
+  [K in keyof typeof modules[T]['options']]?: typeof modules[T]['options'][K] extends ModuleOptionDefinition<
     infer R
   >
     ? R
     : never;
 };
 
-export const baseModules: BaseModules = {
+export const modules: Modules = {
   analysis: {
+    type: 'pre',
+    name: 'Analysis',
+    key: 'analysis',
+    description: 'Retrieve AI analysis of your command and response',
+    information:
+      'Summarizes the understanding by the AI of the command for further analysis',
     options: {},
   },
   compliance: {
+    type: 'post',
+    name: 'Compliance',
+    key: 'compliance',
+    description: 'Validate the response of a command against a JSON schema',
+    information:
+      'Ensuring that your response is valid JSON and that it contains the expected properties',
     options: {
       retry: {
         default: true as boolean, // TODO: Remove "as type" necessity
@@ -44,7 +64,7 @@ export const baseModules: BaseModules = {
       },
     },
   },
-} as const satisfies BaseModules;
+} as const satisfies Modules;
 
 export type BaseProcessInfo = {
   module: string;

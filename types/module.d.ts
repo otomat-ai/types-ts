@@ -2,11 +2,18 @@ import { ChatCompletionFunctions, ChatCompletionRequestMessageFunctionCall } fro
 import { GeneratorModel, GeneratorModule } from './generator';
 export declare const MODULES: readonly ["analysis", "compliance"];
 export type ModuleName = typeof MODULES[number];
-export type BaseModule<T extends Record<string, ModuleOptionDefinition<any>>> = {
+export type ModuleInformation = {
+    type: 'pre' | 'post';
+    name: string;
+    key: string;
+    description: string;
+    information?: string;
+};
+export type Module<T extends Record<string, ModuleOptionDefinition<any>>> = ModuleInformation & {
     options: T;
 };
-export type BaseModules = {
-    [Key in ModuleName]: BaseModule<any>;
+export type Modules = {
+    [Key in ModuleName]: Module<any>;
 };
 export type ModuleOptionDefinition<T extends string | number | boolean> = {
     default: T;
@@ -14,9 +21,9 @@ export type ModuleOptionDefinition<T extends string | number | boolean> = {
     description: string;
 };
 export type ModuleOptionValue<T extends ModuleName> = {
-    [K in keyof typeof baseModules[T]['options']]?: typeof baseModules[T]['options'][K] extends ModuleOptionDefinition<infer R> ? R : never;
+    [K in keyof typeof modules[T]['options']]?: typeof modules[T]['options'][K] extends ModuleOptionDefinition<infer R> ? R : never;
 };
-export declare const baseModules: BaseModules;
+export declare const modules: Modules;
 export type BaseProcessInfo = {
     module: string;
     options: ModuleOptionValue<any>;
