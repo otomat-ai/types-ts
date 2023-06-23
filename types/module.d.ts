@@ -1,18 +1,18 @@
 import { ChatCompletionFunctions, ChatCompletionRequestMessageFunctionCall } from 'openai';
 import { GeneratorModel, GeneratorModule } from './generator';
-export type ModuleNames = keyof typeof modules;
+export type ModuleNames = keyof typeof MODULES;
 export type ModuleOptionDefinition<T extends string | number | boolean> = {
     default: T;
     required: boolean;
     description: string;
 };
 export type ModuleOptionValue<T extends ModuleNames> = {
-    [K in keyof typeof modules[T]['options']]?: typeof modules[T]['options'][K] extends ModuleOptionDefinition<infer R> ? R : never;
+    [K in keyof typeof MODULES[T]['options']]?: typeof MODULES[T]['options'][K] extends ModuleOptionDefinition<infer R> ? R : never;
 };
 export type Module<T extends Record<string, ModuleOptionDefinition<any>>> = {
     options: T;
 };
-export declare const modules: Record<string, Module<Record<string, ModuleOptionDefinition<any>>>>;
+export declare const MODULES: Record<string, Module<Record<string, ModuleOptionDefinition<any>>>>;
 export type BaseProcessInfo = {
     module: string;
     options: ModuleOptionValue<any>;
@@ -31,7 +31,7 @@ export type Meta = {
     cost: number;
     retries: number;
     process: {
-        [P in keyof typeof modules]?: ProcessInfo;
+        [P in keyof typeof MODULES]?: ProcessInfo;
     };
 };
 type BaseCompletion = {

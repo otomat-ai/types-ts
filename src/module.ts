@@ -4,7 +4,7 @@ import {
 } from 'openai';
 import { GeneratorModel, GeneratorModule } from './generator';
 
-export type ModuleNames = keyof typeof modules;
+export type ModuleNames = keyof typeof MODULES;
 
 export type ModuleOptionDefinition<T extends string | number | boolean> = {
   default: T;
@@ -13,7 +13,7 @@ export type ModuleOptionDefinition<T extends string | number | boolean> = {
 };
 
 export type ModuleOptionValue<T extends ModuleNames> = {
-  [K in keyof typeof modules[T]['options']]?: typeof modules[T]['options'][K] extends ModuleOptionDefinition<
+  [K in keyof typeof MODULES[T]['options']]?: typeof MODULES[T]['options'][K] extends ModuleOptionDefinition<
     infer R
   >
     ? R
@@ -24,7 +24,7 @@ export type Module<T extends Record<string, ModuleOptionDefinition<any>>> = {
   options: T;
 };
 
-export const modules: Record<
+export const MODULES: Record<
   string,
   Module<Record<string, ModuleOptionDefinition<any>>>
 > = {
@@ -66,7 +66,7 @@ export type Meta = {
   model: GeneratorModel;
   cost: number;
   retries: number;
-  process: { [P in keyof typeof modules]?: ProcessInfo };
+  process: { [P in keyof typeof MODULES]?: ProcessInfo };
 };
 
 type BaseCompletion = {
